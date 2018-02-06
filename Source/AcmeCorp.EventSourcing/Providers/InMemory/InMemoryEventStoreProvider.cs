@@ -62,7 +62,7 @@
                 for (int i = fromRevision; i < toRevision; i++)
                 {
                     eventStoreStream.Add(eventStoreMessages[i]);
-                    this.logger.Info($"Read message of type '{eventStoreMessages[i].Body.GetType().Name}' from stream.");
+                    this.logger.Info($"Read message of type '{eventStoreMessages[i].Body.GetType().Name}' from stream '{eventStreamId}'.");
                 }
 
                 return eventStoreStream;
@@ -181,7 +181,7 @@
                     }
 
                     stream.Add(eventStoreMessage);
-                    this.logger.Info($"Added message of type '{eventStoreMessage.Body.GetType().Name}' to stream.");
+                    this.logger.Info($"Added message of type '{eventStoreMessage.Body.GetType().Name}' to stream '{eventStreamId}'.");
                     count++;
                 }
 
