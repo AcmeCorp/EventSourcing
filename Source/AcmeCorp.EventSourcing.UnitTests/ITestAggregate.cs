@@ -4,6 +4,10 @@
     {
         TestMessageA LastTestMessageA { get; }
 
+        bool TestMessageCWasHandled { get; }
+
         void BusinessLogicThatResultsInEventA(string value);
+
+        void BusinessLogicThatResultsInEventC();
     }
 }

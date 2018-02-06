@@ -6,6 +6,7 @@
     using System.Threading.Tasks;
     using AcmeCorp.EventSourcing;
     using AcmeCorp.EventSourcing.Configuration;
+    using AcmeCorp.EventSourcing.Logging;
 
     public class InMemoryEventStoreProvider : EventStoreProvider
     {
@@ -13,13 +14,20 @@
 
         private static readonly object SnapshotStreamsSync = new object();
 
-        private readonly IDictionary<string, IList<EventStoreMessage>> eventStreams = new Dictionary<string, IList<EventStoreMessage>>();
+        private static readonly IDictionary<string, IList<EventStoreMessage>> EventStreams = new Dictionary<string, IList<EventStoreMessage>>();
 
-        private readonly IDictionary<string, IList<EventStoreSnapshot>> snapshotStreams = new Dictionary<string, IList<EventStoreSnapshot>>();
+        private static readonly IDictionary<string, IList<EventStoreSnapshot>> SnapshotStreams = new Dictionary<string, IList<EventStoreSnapshot>>();
+
+        private readonly ILogger logger;
+
+        public InMemoryEventStoreProvider(ILogger logger)
+        {
+            this.logger = logger;
+        }
 
         public override async Task<bool> StreamExistsAsync(string eventStreamId)
         {
-            return this.eventStreams.ContainsKey(eventStreamId);
+            return EventStreams.ContainsKey(eventStreamId);
         }
 
         public override async Task<IEventStoreStream> ReadEventsAsync(string eventStreamId, int maximumRevision)
@@ -37,7 +45,7 @@
                     throw new EventStreamNotFoundException($"No Event Stream was found for ID '{eventStreamId}' and expected revision '{toRevision}'. Either the stream did not exist at all or the stream existed but did not match the expected revision.");
                 }
 
-                IList<EventStoreMessage> eventStoreMessages = this.eventStreams[eventStreamId];
+                IList<EventStoreMessage> eventStoreMessages = EventStreams[eventStreamId];
                 if (toRevision == ExpectedStreamRevision.End)
                 {
                     toRevision = eventStoreMessages.Count;
@@ -54,6 +62,7 @@
                 for (int i = fromRevision; i < toRevision; i++)
                 {
                     eventStoreStream.Add(eventStoreMessages[i]);
+                    this.logger.Info($"Read message of type '{eventStoreMessages[i].Body.GetType().Name}' from stream.");
                 }
 
                 return eventStoreStream;
@@ -87,7 +96,7 @@
                         }
                     }
 
-                    IList<EventStoreSnapshot> stream = this.GetOrCreateSnapshotStream(snapshotStreamId);
+                    IList<EventStoreSnapshot> stream = GetOrCreateSnapshotStream(snapshotStreamId);
                     stream.Add(eventStoreSnapshot);
                 }
             }
@@ -97,13 +106,13 @@
         {
             lock (SnapshotStreamsSync)
             {
-                bool streamExists = this.snapshotStreams.ContainsKey(snapshotStreamId);
+                bool streamExists = SnapshotStreams.ContainsKey(snapshotStreamId);
                 if (!streamExists)
                 {
                     return false;
                 }
 
-                IList<EventStoreSnapshot> snapshots = this.snapshotStreams[snapshotStreamId];
+                IList<EventStoreSnapshot> snapshots = SnapshotStreams[snapshotStreamId];
                 if (snapshots.Count < 1)
                 {
                     return false;
@@ -120,12 +129,12 @@
         {
             lock (SnapshotStreamsSync)
             {
-                if (!this.snapshotStreams.ContainsKey(snapshotStreamId))
+                if (!SnapshotStreams.ContainsKey(snapshotStreamId))
                 {
                     throw new EventStreamNotFoundException($"No Event Stream was found for ID '{snapshotStreamId}'.");
                 }
 
-                return this.snapshotStreams[snapshotStreamId].Last();
+                return SnapshotStreams[snapshotStreamId].Last();
             }
         }
 
@@ -144,7 +153,7 @@
                 {
                     if (expectedStreamRevision == ExpectedStreamRevision.New || expectedStreamRevision == ExpectedStreamRevision.Any)
                     {
-                        this.eventStreams.Add(eventStreamId, new List<EventStoreMessage>());
+                        EventStreams.Add(eventStreamId, new List<EventStoreMessage>());
                     }
                     else
                     {
@@ -152,7 +161,7 @@
                     }
                 }
 
-                IList<EventStoreMessage> stream = this.eventStreams[eventStreamId];
+                IList<EventStoreMessage> stream = EventStreams[eventStreamId];
                 if (expectedStreamRevision != stream.Count && expectedStreamRevision != ExpectedStreamRevision.Any)
                 {
                     throw new EventStreamNotFoundException($"No Event Stream was found for ID '{eventStreamId}' and expected revision '{expectedStreamRevision}'. Either the stream did not exist at all or the stream existed but did not match the expected revision.");
@@ -172,6 +181,7 @@
                     }
 
                     stream.Add(eventStoreMessage);
+                    this.logger.Info($"Added message of type '{eventStoreMessage.Body.GetType().Name}' to stream.");
                     count++;
                 }
 
@@ -179,49 +189,26 @@
             }
         }
 
-        private IList<EventStoreMessage> GetOrCreateEventStream(string streamId)
+        private static IList<EventStoreSnapshot> GetOrCreateSnapshotStream(string streamId)
         {
-            bool streamExists = this.StreamExistsAsync(streamId).Result;
-            IList<EventStoreMessage> stream;
-            if (!streamExists)
-            {
-                stream = this.AddEventStream(streamId);
-            }
-            else
-            {
-                stream = this.eventStreams[streamId];
-            }
-
-            return stream;
-        }
-
-        private IList<EventStoreMessage> AddEventStream(string streamId)
-        {
-            IList<EventStoreMessage> newStream = new List<EventStoreMessage>();
-            this.eventStreams.Add(streamId, newStream);
-            return newStream;
-        }
-
-        private IList<EventStoreSnapshot> GetOrCreateSnapshotStream(string streamId)
-        {
-            bool streamExists = this.snapshotStreams.ContainsKey(streamId);
+            bool streamExists = SnapshotStreams.ContainsKey(streamId);
             IList<EventStoreSnapshot> stream;
             if (!streamExists)
             {
-                stream = this.AddSnapshotStream(streamId);
+                stream = AddSnapshotStream(streamId);
             }
             else
             {
-                stream = this.snapshotStreams[streamId];
+                stream = SnapshotStreams[streamId];
             }
 
             return stream;
         }
 
-        private IList<EventStoreSnapshot> AddSnapshotStream(string streamId)
+        private static IList<EventStoreSnapshot> AddSnapshotStream(string streamId)
         {
             IList<EventStoreSnapshot> newStream = new List<EventStoreSnapshot>();
-            this.snapshotStreams.Add(streamId, newStream);
+            SnapshotStreams.Add(streamId, newStream);
             return newStream;
         }
     }

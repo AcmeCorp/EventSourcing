@@ -5,6 +5,7 @@
     using System.Linq;
     using System.Threading.Tasks;
     using AcmeCorp.EventSourcing.Configuration;
+    using AcmeCorp.EventSourcing.Logging;
     using AcmeCorp.EventSourcing.Providers.InMemory;
     using Moq;
     using Xunit;
@@ -545,7 +546,7 @@
 
         private static IEventStoreProvider GetEventStoreProvider()
         {
-            return new InMemoryEventStoreProvider();
+            return new InMemoryEventStoreProvider(new ConsoleLogger());
         }
     }
 }

@@ -2,6 +2,7 @@
 {
     using System;
     using System.Threading.Tasks;
+    using AcmeCorp.EventSourcing.Logging;
     using AcmeCorp.EventSourcing.Providers.InMemory;
     using Xunit;
 
@@ -120,7 +121,7 @@
 
         private static IDomainRepository GetDomainRepository()
         {
-            IEventStoreProvider eventStoreProvider = new InMemoryEventStoreProvider();
+            IEventStoreProvider eventStoreProvider = new InMemoryEventStoreProvider(new ConsoleLogger());
             IDomainRepository domainRepository = new EventStoreDomainRepository(eventStoreProvider);
             return domainRepository;
         }

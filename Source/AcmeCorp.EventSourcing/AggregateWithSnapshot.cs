@@ -37,7 +37,7 @@
                 throw new ArgumentNullException(nameof(eventStoreSnapshot));
             }
 
-            var body = eventStoreSnapshot.Body as T;
+            T body = eventStoreSnapshot.Body as T;
             if (body == null)
             {
                 throw new EventSourcingException("Can't cast event type to given snapshot type.");

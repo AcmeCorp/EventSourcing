@@ -120,10 +120,10 @@
         public void Given_Number_Of_Events_Since_Snapshot_Below_Limit_Then_Not_Ready_To_Take_Snapshot(int numberOfEventsBetweenSnapshots)
         {
             // Arrange
-            var testAggregate = GetAggregateWithEvents(numberOfEventsBetweenSnapshots, numberOfEventsBetweenSnapshots - 1);
+            TestAggregate testAggregate = GetAggregateWithEvents(numberOfEventsBetweenSnapshots, numberOfEventsBetweenSnapshots - 1);
 
             // Act
-            var result = testAggregate.IsReadyToTakeSnapshot();
+            bool result = testAggregate.IsReadyToTakeSnapshot();
 
             // Assert
             Assert.False(result);
@@ -137,21 +137,34 @@
             int numberOfEventsBetweenSnapshots)
         {
             // Arrange
-            var testAggregate = GetAggregateWithEvents(numberOfEventsBetweenSnapshots, numberOfEventsBetweenSnapshots);
+            TestAggregate testAggregate = GetAggregateWithEvents(numberOfEventsBetweenSnapshots, numberOfEventsBetweenSnapshots);
 
             // Act
-            var result = testAggregate.IsReadyToTakeSnapshot();
+            bool result = testAggregate.IsReadyToTakeSnapshot();
 
             // Assert
             Assert.True(result);
         }
 
+        [Fact]
+        public void Given_An_Event_That_Is_An_Interface_When_The_Business_Logic_Is_Invoked_Then_The_Event_Is_Handled()
+        {
+            // Arrange
+            TestAggregate testAggregate = new TestAggregate(Guid.NewGuid().ToEventStreamIdFormattedString(), int.MaxValue);
+
+            // Act
+            testAggregate.BusinessLogicThatResultsInEventC();
+
+            // Assert
+            Assert.True(testAggregate.TestMessageCWasHandled);
+        }
+
         private static TestAggregate GetAggregateWithEvents(int numberOfEventsBetweenSnapshots, int numberOfEvents)
         {
-            var testAggregate = new TestAggregate(
+            TestAggregate testAggregate = new TestAggregate(
                 Guid.NewGuid().ToEventStreamIdFormattedString(),
                 numberOfEventsBetweenSnapshots);
-            for (var i = 0; i < numberOfEvents; i++)
+            for (int i = 0; i < numberOfEvents; i++)
             {
                 testAggregate.BusinessLogicThatResultsInEventA("value");
             }

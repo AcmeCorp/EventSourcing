@@ -57,7 +57,7 @@
                 throw new EventSourcingException(exceptionMessage);
             }
 
-            var streamExists = await this.eventStoreProvider.StreamExistsAsync(aggregate.EventStreamId).ConfigureAwait(false);
+            bool streamExists = await this.eventStoreProvider.StreamExistsAsync(aggregate.EventStreamId).ConfigureAwait(false);
             if (!streamExists)
             {
                 return false;

@@ -14,13 +14,13 @@
                 throw new ArgumentNullException(nameof(message));
             }
 
-            var fullNameAssemblyQualified = string.Format(
+            string fullNameAssemblyQualified = string.Format(
                 CultureInfo.InvariantCulture,
                 "{0}, {1}",
                 message.GetType().FullName,
                 message.GetType().Assembly.GetName().Name);
 
-            var metadata = new Dictionary<string, object>
+            Dictionary<string, object> metadata = new Dictionary<string, object>
             {
                 { EventStoreMessageHeaderKey.EventId, eventId.ToEventStreamIdFormattedString() },
                 { EventStoreMetadataKey.FullNameAssemblyQualifiedStrongName, message.GetType().AssemblyQualifiedName },

@@ -13,6 +13,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		DotNetCoreTests.ruleset = DotNetCoreTests.ruleset
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AcmeCorp.EventSourcing.Testing", "AcmeCorp.EventSourcing.Testing\AcmeCorp.EventSourcing.Testing.csproj", "{C0318778-B47C-4710-B10C-F32F79290ACE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{9261FE75-AFF7-42BD-A3C7-F164507682FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9261FE75-AFF7-42BD-A3C7-F164507682FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9261FE75-AFF7-42BD-A3C7-F164507682FF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C0318778-B47C-4710-B10C-F32F79290ACE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C0318778-B47C-4710-B10C-F32F79290ACE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C0318778-B47C-4710-B10C-F32F79290ACE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C0318778-B47C-4710-B10C-F32F79290ACE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

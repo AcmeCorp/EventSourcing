@@ -1,6 +1,7 @@
 ﻿namespace AcmeCorp.EventSourcing.UnitTests.Providers
 {
     using System.Threading.Tasks;
+    using AcmeCorp.EventSourcing.Logging;
     using AcmeCorp.EventSourcing.Providers.InMemory;
     using Xunit;
 
@@ -154,7 +155,7 @@
         {
             // File system provider not yet implemented
             // return new FileSystemEventStoreProvider();
-            return new InMemoryEventStoreProvider();
+            return new InMemoryEventStoreProvider(new ConsoleLogger());
         }
     }
 }

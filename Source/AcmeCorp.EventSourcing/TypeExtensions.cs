@@ -13,8 +13,8 @@
                 throw new ArgumentNullException(nameof(type));
             }
 
-            var interfaces = type.GetInterfaces();
-            var interfaceType = typeof(IHandleEvent<>).MakeGenericType(messageType);
+            Type[] interfaces = type.GetInterfaces();
+            Type interfaceType = typeof(IHandleEvent<>).MakeGenericType(messageType);
             if (interfaces.All(x => x != interfaceType))
             {
                 // No interface means aggregate doesn't process this event type
@@ -22,7 +22,7 @@
                 return false;
             }
 
-            var map = type.GetInterfaceMap(interfaceType);
+            InterfaceMapping map = type.GetInterfaceMap(interfaceType);
             method = map.TargetMethods.Single();
             return true;
         }
