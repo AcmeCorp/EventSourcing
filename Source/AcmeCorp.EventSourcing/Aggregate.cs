@@ -55,9 +55,9 @@
                 throw new ArgumentException("The Event ID must be a valid GUID.", nameof(eventMessage));
             }
 
-            this.ApplyObject(eventMessage);
-            this.NumberOfEventsSinceLastSnapshot++;
             this.UncommittedEvents.Add(new DomainEvent(eventId, eventMessage));
+            this.NumberOfEventsSinceLastSnapshot++;
+            this.ApplyObject(eventMessage);
         }
 
         private void ApplyObject(object eventMessage)
