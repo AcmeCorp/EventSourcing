@@ -64,9 +64,7 @@
         {
             // Key off a combination of the aggregate type and the message type (multiple aggregates may accept the same message).
             Tuple<Type, Type> updateStateMethodCacheKey = new Tuple<Type, Type>(this.GetType(), eventMessage.GetType());
-
-            MethodInfo method;
-            if (UpdateStateMethodCache.TryGetValue(updateStateMethodCacheKey, out method))
+            if (UpdateStateMethodCache.TryGetValue(updateStateMethodCacheKey, out MethodInfo method))
             {
                 method.Invoke(this, new[] { eventMessage });
             }
